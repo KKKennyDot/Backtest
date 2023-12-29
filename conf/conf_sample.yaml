@@ -1,0 +1,14 @@
+base_config:
+  strategy_name: TrendFollowingAllPerpetuals
+  exchange: binance
+  test_net: false
+
+  websocket_topics_cfg:
+    uswap:
+      topics:
+        - btcusdt@kline_8h
+        - ethusdt@kline_8h
+
+strategy_config:
+  market_type: uswap
+  
