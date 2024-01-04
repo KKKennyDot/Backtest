@@ -1,14 +1,13 @@
-base_config:
-  strategy_name: TrendFollowingAllPerpetuals
-  exchange: binance
-  test_net: false
-
-  websocket_topics_cfg:
-    uswap:
-      topics:
-        - btcusdt@kline_8h
-        - ethusdt@kline_8h
-
-strategy_config:
-  market_type: uswap
-  
+file_depth: ../dataProc/BTC_DataProc/depth_data/btcusdt_2023_12_29.bin
+file_trade: .../dataProc/BTC_DataProc/trade_data/index.csv
+file_write: btc_output_local.csv
+ob_level: 20
+start_time: '2023-12-29 8:02:42.0'
+end_time: '2023-12-29 16:12:56.0'
+symbols: 
+  - btcusdt  
+strategy_name: MACD
+market_data_type: orderbook
+market_type: uswap
+n_tick: 1
+time_limit: 60  
