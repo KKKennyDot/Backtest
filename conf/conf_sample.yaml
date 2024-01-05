@@ -1,9 +1,9 @@
 file_depth: ../dataProc/BTC_DataProc/depth_data/btcusdt_2023_12_29.bin
-file_trade: .../dataProc/BTC_DataProc/trade_data/index.csv
+file_trade: ../dataProc/BTC_DataProc/trade_data/index.csv
 file_write: btc_output_local.csv
 ob_level: 20
-start_time: '2023-12-29 8:02:42.0'
-end_time: '2023-12-29 16:12:56.0'
+start_time: '2023-12-29 14:02:42.0'
+end_time: '2023-12-29 15:12:56.0'
 symbols: 
   - btcusdt  
 strategy_name: MACD

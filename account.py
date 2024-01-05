@@ -21,10 +21,10 @@ class Account:
         # self.hist_positions = dict[str, Position]()
         # self.hist_instruction = dict[str, Instruction]()
         self.initial_cash = initial_cash
-        self.cash: Optional[list[float]] = None
-        self.pnl: Optional[list[float]]  = None
-        self.holding_worth: Optional[list[float]]  = None
-        self.net_worth: Optional[list[float]]  = None
+        self.cash: Optional[list[float]]()
+        self.pnl: Optional[list[float]]()
+        self.holding_worth: Optional[list[float]]()
+        self.net_worth: Optional[list[float]]()
         self.closing_all_position = False
 
         self.directions = dict[str, int]()

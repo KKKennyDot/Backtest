@@ -104,12 +104,42 @@ class Orderbook:
             return self.asks[level]
         else:
             raise Exception('choose from bid or ask')
-    def get_vol_from_price(self, price: float) -> float:
-        vol_total = 0.0
-        for i in range(self.ob_level):
-            if self.asks[i][0] < price:
-                vol_total += self.asks[i][1]
-        return vol_total
+        
+    def get_vol_from_price(self, price: float, tag: str) -> float:
+        if tag == 'ask':
+            for i in range(self.ob_level):
+                if self.asks[i][0] == price:
+                    return self.asks[i][1]
+        elif tag == 'bid':
+            for i in range(self.ob_level):
+                if self.bids[i][0] == price:
+                    return self.asks[i][1]
+        else:
+            raise Exception('tag can only be bid or ask')
+        
+    def get_price_vol_queue(self, tag: str) -> deque:
+        if tag == 'bid':
+            return self.bids
+        elif tag == 'ask':
+            return self.asks
+        else:
+            raise Exception('tag can only be bid or ask')
+
+    def get_price_list(self, tag: str) -> list:
+        if tag == 'bid':
+            return [x[0] for x in self.bids]
+        elif tag == 'ask':
+            return [x[0] for x in self.asks]
+        else:
+            raise Exception('tag can only be bid or ask')
+        
+    def get_vol_list(self, tag: str) -> list:
+        if tag == 'bid':
+            return [x[1] for x in self.bids]
+        elif tag == 'ask':
+            return [x[1] for x in self.asks]
+        else:
+            raise Exception('tag can only be bid or ask')
 
 
 class MarketData:
@@ -170,7 +200,7 @@ class orderbookLoader:
     
     async def process_trade_line(self, line) -> Optional[list]:
         line = line.strip('\n').split(',')
-        if int(line[self.trade_cols['time']]) < self._first_tick_ts or int(line[self.trade_cols['time']]) > self._last_tick_ts:
+        if (line[self.trade_cols['time']]) < str(self._first_tick_ts) or (line[self.trade_cols['time']]) > str(self._last_tick_ts):
             return None
         res = []
         res.append(line[self.trade_cols['id']])
