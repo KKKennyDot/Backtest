@@ -17,38 +17,38 @@ class Account:
         self.instructionNum = 0
         self.positionNum = 0
         self.commission_rate = commission_rate
-        self.position = dict[str, Position]()
+        self.position: dict[str, Position] = {}
         # self.hist_positions = dict[str, Position]()
         # self.hist_instruction = dict[str, Instruction]()
         self.initial_cash = initial_cash
-        self.cash: Optional[list[float]]()
-        self.pnl: Optional[list[float]]()
-        self.holding_worth: Optional[list[float]]()
-        self.net_worth: Optional[list[float]]()
+        self.cash: float = initial_cash
+        self.pnl: float = 0.0
+        self.holding_worth: float = 0.0
+        self.net_worth: float = 0.0
         self.closing_all_position = False
 
-        self.directions = dict[str, int]()
+        self.directions: dict[str, int] = {}
 
-    async def get_current_cash(self) -> float:
-        return self.cash[-1]
-    async def get_current_pnl(self) -> float:
-        return self.pnl[-1]
-    async def get_current_holding_worth(self) -> float:
-        return self.holding_worth[-1]
-    async def get_current_net_worth(self) -> float:
-        return self.net_worth[-1]
+    def get_current_cash(self) -> float:
+        return self.cash
+    def get_current_pnl(self) -> float:
+        return self.pnl
+    def get_current_holding_worth(self) -> float:
+        return self.holding_worth
+    def get_current_net_worth(self) -> float:
+        return self.net_worth
     
-    async def get_current_position(
+    def get_current_position(
         self,
         symbol: str,
     ) -> Position:
         return self.position[symbol]
     
-    async def generate_inst_id(self) -> str:
+    def generate_inst_id(self) -> str:
         t = base36.dumps(int(time.time() * 1000))  # convert to base36 to save space
         return f"{self.account_id}_{t}"
 
-    async def create_instruction(self, symbol: str,  market_type:str, qty: float, direction: int, limit_price: float, time_limit: int, tag: int, ts: int) -> Instruction:
+    async def create_instruction(self, symbol: str,  market_type:str, qty: float, direction: int, limit_price: float, time_limit: int, ts: int) -> Instruction:
         inst = Instruction(
             uid = self.generate_inst_id(),
             symbol = symbol,
@@ -57,7 +57,6 @@ class Account:
             direction = direction,
             limit_price = limit_price,
             time_limit = time_limit,
-            tag = tag,
             ts = ts,
         )
         return inst
@@ -91,7 +90,8 @@ class Account:
             else:
                 raise Exception('wrong tag type!')
     async def update_position_value(self, symbol: str,  current_price: float):
-        self.position[symbol].update_current_value(current_price = current_price)
+        if symbol in self.position.keys():
+            self.position[symbol].update_current_value(current_price = current_price)
     
     async def update_metric(self):
         last_cash = self.cash

@@ -110,10 +110,12 @@ class Orderbook:
             for i in range(self.ob_level):
                 if self.asks[i][0] == price:
                     return self.asks[i][1]
+            return 0.0
         elif tag == 'bid':
             for i in range(self.ob_level):
                 if self.bids[i][0] == price:
                     return self.asks[i][1]
+            return 0.0          # 没有这个价格档位qty返回0
         else:
             raise Exception('tag can only be bid or ask')
         
@@ -179,6 +181,8 @@ class orderbookLoader:
         self.depth_cols = dict(zip(depth_cols, range(2 + ob_level * 4)))
         trade_cols = ['id', 'price', 'qty', 'quote_qty', 'time', 'is_buyer_maker', 'start_timestamp', 'end_timestamp']
         self.trade_cols = dict(zip(trade_cols, range(8)))
+
+        self.trade_dataframe: Optional[list] = []
         
     
     async def process_depth_line(self, line, ob_level) -> Optional[list]:
@@ -198,7 +202,7 @@ class orderbookLoader:
                     break
         return res
     
-    async def process_trade_line(self, line) -> Optional[list]:
+    def process_trade_line(self, line) -> Optional[list]:
         line = line.strip('\n').split(',')
         if (line[self.trade_cols['time']]) < str(self._first_tick_ts) or (line[self.trade_cols['time']]) > str(self._last_tick_ts):
             return None
@@ -227,7 +231,7 @@ class orderbookLoader:
                 tick_depth_data = await self.process_depth_line(line, self.ob_level) 
                 if tick_depth_data != None: self.depthNum += 1  # TODO 能否正常判断
                 yield  tick_depth_data # one row at a time
-            if self.depthNum != 0:
+            if self.depthNum == 0:
                 raise Exception('There is no orderbook depth data during the appointed backtest time period')
 
     async def tick_trade_data_feed(self) -> Optional[list]:  # TODO 是否是return None
@@ -245,5 +249,26 @@ class orderbookLoader:
                 tick_trade_data = await self.process_trade_line(line) 
                 if tick_trade_data != None: self.tradeNum += 1
                 yield  tick_trade_data # one row at a time
+            if self.tradeNum == 0:
+                raise Exception('There is no orderbook trade data during the appointed backtest time period')
+
+
+    async def tick_trade_data_feed_nonAsync(self):  # TODO 是否是return None
+        
+        self.current_time = time.time()
+        if not os.path.exists(self.file_trade):
+            raise Exception('There is no such orderbook trade data file')
+
+        with open(self.file_trade, 'r') as f:
+            # first_line = await f.readline()    # no header for both trade and depth data
+            header = f.readline() 
+            while True:
+                line = f.readline() # TODO  新的trade csv文件第一行为header
+                if not line:
+                    break
+                tick_trade_data = self.process_trade_line(line) 
+                if tick_trade_data != None: 
+                    self.tradeNum += 1
+                    self.trade_dataframe.append(tick_trade_data) # one row at a time
             if self.tradeNum == 0:
                 raise Exception('There is no orderbook trade data during the appointed backtest time period')

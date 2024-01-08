@@ -3,11 +3,11 @@ file_trade: ../dataProc/BTC_DataProc/trade_data/index.csv
 file_write: btc_output_local.csv
 ob_level: 20
 start_time: '2023-12-29 14:02:42.0'
-end_time: '2023-12-29 15:12:56.0'
+end_time: '2023-12-29 14:03:42.0'
 symbols: 
   - btcusdt  
 strategy_name: MACD
 market_data_type: orderbook
 market_type: uswap
 n_tick: 1
-time_limit: 60  
+time_limit: 1   # seconds
